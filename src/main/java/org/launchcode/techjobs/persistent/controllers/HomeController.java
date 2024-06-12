@@ -59,12 +59,17 @@ public class HomeController {
             return "add";
         }
 
-        Optional<Employer> result = employerRepository.findById(employerId);
-        Employer employer = result.get();
-        newJob.setEmployer(employer);
-
         List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
         newJob.setSkills(skillObjs);
+
+        Optional<Employer> result = employerRepository.findById(employerId);
+        if (!result.isPresent()) {
+            model.addAttribute("title", "Add Job");
+            model.addAttribute("employerError", "Employer not found");
+            return "add";  // Return to the form with an error message
+        }
+        Employer employer = result.get();
+        newJob.setEmployer(employer);
 
         jobRepository.save(newJob);
 
